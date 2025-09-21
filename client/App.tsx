@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Protocols from "./pages/Protocols";
 import Sentiment from "./pages/Sentiment";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
