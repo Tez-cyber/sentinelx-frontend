@@ -225,7 +225,7 @@ export default function Admin() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button className="w-full" onClick={handlePublish}>
-              <SendHorizonal /> Publish to BlockDAG
+              <Send /> Publish to BlockDAG
             </Button>
             <div className="rounded-xl border border-border/60 bg-card/60 p-4 text-sm">
               <div className="text-muted-foreground">Last Published</div>
