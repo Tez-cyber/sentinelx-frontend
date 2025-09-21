@@ -28,6 +28,7 @@ const AppRoot = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/protocols" element={<Protocols />} />
             <Route path="/sentiment" element={<Sentiment />} />
             <Route path="/settings" element={<Settings />} />
