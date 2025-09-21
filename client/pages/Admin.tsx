@@ -9,7 +9,7 @@ import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
 import { Slider } from "../components/ui/slider";
 import { Plus, Pencil, Trash2, Database, Send } from "lucide-react";
-import { toast } from "../components/ui/use-toast";
+import { toast } from "../hooks/use-toast";
 
 // Types
 interface Protocol { id: string; name: string; symbol: string; tvl: number; collateralRatio: number; }
