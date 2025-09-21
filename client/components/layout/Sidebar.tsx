@@ -4,6 +4,7 @@ import { cn } from "../../lib/utils";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: Gauge },
+  { to: "/admin", label: "Admin", icon: Settings },
   { to: "/protocols", label: "Protocols", icon: Layers },
   { to: "/sentiment", label: "Sentiment", icon: Activity },
   { to: "/settings", label: "Settings", icon: Settings },
