@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import FusionLineChart from "../components/charts/FusionLineChart";
 import { Gauge } from "../components/charts/Gauge";
 import UpdatesFeed from "../components/feed/UpdatesFeed";
@@ -74,7 +79,9 @@ export default function Index() {
             className="bg-background border border-border rounded-md px-2 py-1"
           >
             {PROTOCOLS.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
             ))}
           </select>
         </div>
@@ -86,12 +93,29 @@ export default function Index() {
             <CardTitle>Financial Risk Score</CardTitle>
           </CardHeader>
           <CardContent>
-            <Gauge value={risk?.score ?? 0} label="0 - 100" colorFrom={riskColors.from} colorTo={riskColors.to} />
+            <Gauge
+              value={risk?.score ?? 0}
+              label="0 - 100"
+              colorFrom={riskColors.from}
+              colorTo={riskColors.to}
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-              <div>TVL</div><div className="text-right text-foreground">${risk?.metrics?.tvl?.toLocaleString?.() ?? "—"}</div>
-              <div>Collateral Ratio</div><div className="text-right text-foreground">{risk?.metrics?.collateral_ratio ?? "—"}%</div>
-              <div>Liquidations (24h)</div><div className="text-right text-foreground">{risk?.metrics?.liquidations ?? "—"}</div>
-              <div>Oracle Spread</div><div className="text-right text-foreground">{risk?.metrics?.oracle_spread ?? "—"}%</div>
+              <div>TVL</div>
+              <div className="text-right text-foreground">
+                ${risk?.metrics?.tvl?.toLocaleString?.() ?? "—"}
+              </div>
+              <div>Collateral Ratio</div>
+              <div className="text-right text-foreground">
+                {risk?.metrics?.collateral_ratio ?? "—"}%
+              </div>
+              <div>Liquidations (24h)</div>
+              <div className="text-right text-foreground">
+                {risk?.metrics?.liquidations ?? "—"}
+              </div>
+              <div>Oracle Spread</div>
+              <div className="text-right text-foreground">
+                {risk?.metrics?.oracle_spread ?? "—"}%
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -100,12 +124,29 @@ export default function Index() {
             <CardTitle>Sentiment Risk</CardTitle>
           </CardHeader>
           <CardContent>
-            <Gauge value={sent?.score ?? 0} label="0 - 100" colorFrom={sentColors.from} colorTo={sentColors.to} />
+            <Gauge
+              value={sent?.score ?? 0}
+              label="0 - 100"
+              colorFrom={sentColors.from}
+              colorTo={sentColors.to}
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-              <div>Twitter</div><div className="text-right text-foreground">{sent?.metrics?.twitter ?? "—"}</div>
-              <div>Reddit</div><div className="text-right text-foreground">{sent?.metrics?.reddit ?? "—"}</div>
-              <div>Telegram</div><div className="text-right text-foreground">{sent?.metrics?.telegram ?? "—"}</div>
-              <div>News</div><div className="text-right text-foreground">{sent?.metrics?.news ?? "—"}</div>
+              <div>Twitter</div>
+              <div className="text-right text-foreground">
+                {sent?.metrics?.twitter ?? "—"}
+              </div>
+              <div>Reddit</div>
+              <div className="text-right text-foreground">
+                {sent?.metrics?.reddit ?? "—"}
+              </div>
+              <div>Telegram</div>
+              <div className="text-right text-foreground">
+                {sent?.metrics?.telegram ?? "—"}
+              </div>
+              <div>News</div>
+              <div className="text-right text-foreground">
+                {sent?.metrics?.news ?? "—"}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -114,13 +155,22 @@ export default function Index() {
             <CardTitle>Fusion Risk Index</CardTitle>
           </CardHeader>
           <CardContent>
-            <Gauge value={fusion?.score ?? 0} label="0 - 100" colorFrom={fusionColors.from} colorTo={fusionColors.to} />
+            <Gauge
+              value={fusion?.score ?? 0}
+              label="0 - 100"
+              colorFrom={fusionColors.from}
+              colorTo={fusionColors.to}
+            />
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-muted-foreground">
               <div>Weights</div>
               <div className="text-right text-foreground">
-                F {fusion?.weights?.financial_pct ?? "—"}% / S {fusion?.weights?.sentiment_pct ?? "—"}%
+                F {fusion?.weights?.financial_pct ?? "—"}% / S{" "}
+                {fusion?.weights?.sentiment_pct ?? "—"}%
               </div>
-              <div>Confidence</div><div className="text-right text-foreground">{fusion?.confidence ?? "—"}%</div>
+              <div>Confidence</div>
+              <div className="text-right text-foreground">
+                {fusion?.confidence ?? "—"}%
+              </div>
               <div className="col-span-2 text-xs">{fusion?.notes ?? ""}</div>
             </div>
           </CardContent>
@@ -133,7 +183,13 @@ export default function Index() {
             <CardTitle>Fusion Risk Index Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            {loading && !trend.length ? <div className="text-sm text-muted-foreground">Loading chart...</div> : <FusionLineChart data={trend} />}
+            {loading && !trend.length ? (
+              <div className="text-sm text-muted-foreground">
+                Loading chart...
+              </div>
+            ) : (
+              <FusionLineChart data={trend} />
+            )}
           </CardContent>
         </Card>
         <Card className="col-span-1">
