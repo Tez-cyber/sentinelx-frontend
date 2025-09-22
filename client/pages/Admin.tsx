@@ -10,6 +10,7 @@ import { Switch } from "../components/ui/switch";
 import { Slider } from "../components/ui/slider";
 import { Plus, Pencil, Trash2, Database, Send } from "lucide-react";
 import { toast } from "../hooks/use-toast";
+import { getAdminSettings, postUpdateSources, postUpdateWeights } from "../lib/api";
 
 // Types
 interface Protocol { id: string; name: string; symbol: string; tvl: number; collateralRatio: number; }
@@ -31,6 +32,25 @@ export default function Admin() {
   // Fusion Risk weights (percent)
   const [financialPct, setFinancialPct] = useState(70);
   const sentimentPct = 100 - financialPct;
+
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [savingWeights, setSavingWeights] = useState(false);
+  const [savingSources, setSavingSources] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    getAdminSettings()
+      .then((s) => {
+        if (!mounted) return;
+        setFinancialPct(s.weights.financial_pct);
+        setSources(s.sources);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingSettings(false));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Oracle publish state
   const [lastPublish, setLastPublish] = useState<{ index: number; tx: string; at: string } | null>(null);
@@ -193,7 +213,7 @@ export default function Admin() {
                 </div>
               </div>
             ))}
-            <Button variant="secondary" onClick={() => toast({ title: "Saved", description: "Sentiment settings updated." })}>Save Settings</Button>
+            <Button variant="secondary" disabled={savingSources} onClick={async () => { setSavingSources(true); const ok = await postUpdateSources(sources as any); setSavingSources(false); toast({ title: ok ? "Saved" : "Failed", description: ok ? "Sentiment settings updated." : "Could not save settings." }); }}>{savingSources ? "Saving..." : "Save Settings"}</Button>
           </CardContent>
         </Card>
 
@@ -214,7 +234,7 @@ export default function Admin() {
               <span>Sentiment Risk %</span>
               <span className="font-semibold">{sentimentPct}%</span>
             </div>
-            <Button onClick={() => toast({ title: "Saved", description: "Fusion Index weights updated." })}>Save Settings</Button>
+            <Button disabled={savingWeights} onClick={async () => { setSavingWeights(true); const ok = await postUpdateWeights({ financial_pct: financialPct, sentiment_pct: sentimentPct }); setSavingWeights(false); toast({ title: ok ? "Saved" : "Failed", description: ok ? "Fusion Index weights updated." : "Could not save weights." }); }}>{savingWeights ? "Saving..." : "Save Settings"}</Button>
           </CardContent>
         </Card>
 
