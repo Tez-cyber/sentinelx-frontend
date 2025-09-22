@@ -2,8 +2,6 @@ type RiskResponse = { score: number; metrics: { tvl: number; collateral_ratio: n
 type SentimentResponse = { score: number; metrics: { twitter: number; reddit: number; telegram: number; news: number } };
 type FusionResponse = { score: number; weights: { financial_pct: number; sentiment_pct: number }; confidence: number; notes: string; trend: { t: string; v: number }[] };
 
-aSYNC: never;
-
 async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init).catch(() => null as any);
   if (!res || !res.ok) throw new Error("network");
