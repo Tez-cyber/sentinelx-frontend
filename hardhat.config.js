@@ -2,7 +2,7 @@ require("@nomiclabs/hardhat-ethers");
 require("dotenv").config();
 
 module.exports = {
-  solidity: "0.8.10",
+  solidity: "0.8.18",
   networks: {
     blockdag: {
       url: process.env.RPC_URL,
