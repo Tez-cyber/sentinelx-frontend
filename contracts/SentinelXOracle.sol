@@ -12,7 +12,6 @@ contract SentinelXOracle {
         uint256 timestamp;
     }
 
-    // store scores for each protocol by a hashed key
     mapping(bytes32 => Score[]) private protocolScores;
 
     event ScoreUpdated(
@@ -44,7 +43,6 @@ contract SentinelXOracle {
         updater = _newUpdater;
     }
 
-    // updater pushes a new score for a protocol
     function publishScore(
         string calldata protocol,
         uint256 risk,
@@ -60,5 +58,36 @@ contract SentinelXOracle {
         protocolScores[key].push(s);
 
         emit ScoreUpdated(protocol, key, risk, sentiment, fusion, s.timestamp, msg.sender);
+    }
+
+    // returns the latest score for a protocol
+    function getLatestScore(string calldata protocol)
+        external
+        view
+        returns (uint256, uint256, uint256, uint256)
+    {
+        bytes32 key = keccak256(abi.encodePacked(protocol));
+        uint256 len = protocolScores[key].length;
+        require(len > 0, "no scores");
+        Score memory s = protocolScores[key][len - 1];
+        return (s.risk, s.sentiment, s.fusion, s.timestamp);
+    }
+
+    // returns how many scores are stored for a protocol
+    function getScoreCount(string calldata protocol) external view returns (uint256) {
+        bytes32 key = keccak256(abi.encodePacked(protocol));
+        return protocolScores[key].length;
+    }
+
+    // returns a past score by index (0 = oldest)
+    function getScoreAt(string calldata protocol, uint256 index)
+        external
+        view
+        returns (uint256, uint256, uint256, uint256)
+    {
+        bytes32 key = keccak256(abi.encodePacked(protocol));
+        require(index < protocolScores[key].length, "bad index");
+        Score memory s = protocolScores[key][index];
+        return (s.risk, s.sentiment, s.fusion, s.timestamp);
     }
 }
