@@ -5,6 +5,15 @@ contract SentinelXOracle {
     address public owner;
     address public updater;
 
+    struct Score {
+        uint256 risk;
+        uint256 sentiment;
+        uint256 fusion;
+        uint256 timestamp;
+    }
+
+    mapping(bytes32 => Score[]) private protocolScores;
+
     modifier onlyOwner() {
         require(msg.sender == owner, "not owner");
         _;
