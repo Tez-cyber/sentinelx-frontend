@@ -24,6 +24,9 @@ contract SentinelXOracle {
         address updatedBy
     );
 
+    event UpdaterChanged(address oldUpdater, address newUpdater);
+    event OwnershipTransferred(address oldOwner, address newOwner);
+
     modifier onlyOwner() {
         require(msg.sender == owner, "not owner");
         _;
@@ -40,7 +43,15 @@ contract SentinelXOracle {
     }
 
     function setUpdater(address _newUpdater) external onlyOwner {
+        require(_newUpdater != address(0), "zero addr");
+        emit UpdaterChanged(updater, _newUpdater);
         updater = _newUpdater;
+    }
+
+    function transferOwnership(address _newOwner) external onlyOwner {
+        require(_newOwner != address(0), "zero addr");
+        emit OwnershipTransferred(owner, _newOwner);
+        owner = _newOwner;
     }
 
     function publishScore(
@@ -50,7 +61,7 @@ contract SentinelXOracle {
         uint256 fusion
     ) external onlyUpdater {
         require(bytes(protocol).length > 0, "empty name");
-        require(risk <= 100 && sentiment <= 100 && fusion <= 100, "invalid score");
+        require(risk <= 100 && sentiment <= 100 && fusion <= 100, "bad score");
 
         bytes32 key = keccak256(abi.encodePacked(protocol));
 
@@ -60,7 +71,6 @@ contract SentinelXOracle {
         emit ScoreUpdated(protocol, key, risk, sentiment, fusion, s.timestamp, msg.sender);
     }
 
-    // returns the latest score for a protocol
     function getLatestScore(string calldata protocol)
         external
         view
@@ -73,13 +83,11 @@ contract SentinelXOracle {
         return (s.risk, s.sentiment, s.fusion, s.timestamp);
     }
 
-    // returns how many scores are stored for a protocol
     function getScoreCount(string calldata protocol) external view returns (uint256) {
         bytes32 key = keccak256(abi.encodePacked(protocol));
         return protocolScores[key].length;
     }
 
-    // returns a past score by index (0 = oldest)
     function getScoreAt(string calldata protocol, uint256 index)
         external
         view
