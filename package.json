@@ -1,8 +1,15 @@
 {
+  "name": "sentinelx",
+  "version": "1.0.0",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network blockdag"
+  },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "dotenv": "^17.2.2",
-    "ethers": "^5.8.0",
-    "hardhat": "^3.0.6"
+    "hardhat": "2.22.6",
+    "@nomiclabs/hardhat-ethers": "2.2.3",
+    "ethers": "5.7.2",
+    "dotenv": "16.3.1"
   }
 }

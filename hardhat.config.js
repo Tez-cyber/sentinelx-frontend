@@ -7,6 +7,7 @@ module.exports = {
     blockdag: {
       url: process.env.RPC_URL,
       accounts: [process.env.PRIVATE_KEY],
-    },
-  },
+      chainId: 1043
+    }
+  }
 };
