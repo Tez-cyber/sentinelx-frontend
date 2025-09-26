@@ -1,7 +1,5 @@
-import hre from "hardhat";
-import { expect } from "chai";
-
-const { ethers } = hre;
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 describe("SentinelXOracle", function () {
   let Oracle, oracle, owner, updater, other;
