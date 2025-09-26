@@ -16,24 +16,27 @@ describe("SentinelXOracle", function () {
     expect(await oracle.updater()).to.equal(updater.address);
   });
 
-  it("should allow updater to set a prediction", async function () {
-    const tx = await oracle.connect(updater).setPrediction("BTC-USD", 50000);
+  it("should allow updater to publish a score", async function () {
+    const tx = await oracle.connect(updater).publishScore("BTC-USD", 80, 70, 90);
     await tx.wait();
 
-    const [value, timestamp] = await oracle.getPrediction("BTC-USD");
-    expect(value).to.equal(50000);
+    const [risk, sentiment, fusion, timestamp] = await oracle.getLatestScore("BTC-USD");
+
+    expect(risk).to.equal(80);
+    expect(sentiment).to.equal(70);
+    expect(fusion).to.equal(90);
     expect(timestamp).to.be.gt(0);
+
+    expect(await oracle.getScoreCount("BTC-USD")).to.equal(1);
   });
 
-  it("should revert if non-updater tries to set prediction", async function () {
+  it("should revert if non-updater tries to publish a score", async function () {
     await expect(
-      oracle.connect(user).setPrediction("ETH-USD", 3000)
-    ).to.be.revertedWith("Not authorized");
+      oracle.connect(user).publishScore("ETH-USD", 50, 50, 50)
+    ).to.be.revertedWith("not updater");
   });
 
-  it("should return 0 for unset prediction", async function () {
-    const [value, timestamp] = await oracle.getPrediction("DOGE-USD");
-    expect(value).to.equal(0);
-    expect(timestamp).to.equal(0);
+  it("should revert if getLatestScore is called before any scores", async function () {
+    await expect(oracle.getLatestScore("DOGE-USD")).to.be.revertedWith("no scores");
   });
 });
