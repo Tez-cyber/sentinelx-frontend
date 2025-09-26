@@ -9,7 +9,10 @@
   "devDependencies": {
     "hardhat": "2.22.6",
     "@nomiclabs/hardhat-ethers": "2.2.3",
+    "@nomiclabs/hardhat-waffle": "2.0.6",
+    "ethereum-waffle": "3.4.4",
     "ethers": "5.7.2",
-    "dotenv": "16.3.1"
+    "dotenv": "16.3.1",
+    "chai": "4.3.7"
   }
 }
