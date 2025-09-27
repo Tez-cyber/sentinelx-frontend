@@ -19,78 +19,43 @@ function bandColors(v: number) {
   return { from: "#b91c1c", to: "#ef4444" }; // deep red
 }
 
-// Default protocols if Admin hasn’t saved any
-const DEFAULT_PROTOCOLS = [
+// Example protocols
+const PROTOCOLS = [
   { id: "aegis", name: "Aegis Finance" },
   { id: "novalend", name: "NovaLend" },
   { id: "orbitx", name: "OrbitX" },
   { id: "synthia", name: "Synthia" },
 ];
 
+// Example tokens (mapped to protocols)
+const TOKENS = [
+  { id: "eth", name: "Ethereum", protocol: "aegis" },
+  { id: "usdc", name: "USD Coin", protocol: "novalend" },
+  { id: "btc", name: "Bitcoin", protocol: "orbitx" },
+  { id: "synth", name: "Synthia", protocol: "synthia" },
+];
+
 export default function Index() {
-  // Protocols from Admin (or fallback)
-  const [protocols] = useState(() => {
-    try {
-      const saved = localStorage.getItem("sx.admin.protocols");
-      return saved ? JSON.parse(saved) : DEFAULT_PROTOCOLS;
-    } catch {
-      return DEFAULT_PROTOCOLS;
-    }
-  });
+  // Active selections
+  const [activeToken, setActiveToken] = useState(TOKENS[0]);
+  const [activeProtocol, setActiveProtocol] = useState(PROTOCOLS[0].id);
 
-  // Fusion weights from Admin (default 70/30)
-  const [financialPct] = useState(() => {
-    try {
-      const saved = localStorage.getItem("sx.admin.financialPct");
-      return saved ? JSON.parse(saved) : 70;
-    } catch {
-      return 70;
-    }
-  });
-  const sentimentPct = 100 - financialPct;
-
-  // Sentiment sources from Admin (default: all true)
-  const [sources] = useState(() => {
-    try {
-      const saved = localStorage.getItem("sx.admin.sources");
-      return saved
-        ? JSON.parse(saved)
-        : { twitter: true, telegram: true, reddit: true, news: true };
-    } catch {
-      return { twitter: true, telegram: true, reddit: true, news: true };
-    }
-  });
-
-  // Active protocol selection
-  const [protocol, setProtocol] = useState(protocols[0]?.id ?? "");
   const [risk, setRisk] = useState<any>(null);
   const [sent, setSent] = useState<any>(null);
   const [fusion, setFusion] = useState<any>(null);
   const [feed, setFeed] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Restore last selected protocol
+  // Fetch API data whenever token or protocol changes
   useEffect(() => {
-    const last = localStorage.getItem("sx.selected.protocol");
-    if (last && protocols.some((p: any) => p.id === last)) {
-      setProtocol(last);
-    }
-  }, [protocols]);
-
-  // Persist protocol choice
-  useEffect(() => {
-    if (protocol) localStorage.setItem("sx.selected.protocol", protocol);
-  }, [protocol]);
-
-  // Fetch API data
-  useEffect(() => {
-    if (!protocol) return;
+    if (!activeToken || !activeProtocol) return;
     let mounted = true;
     setLoading(true);
+
     Promise.all([
-      getRisk(protocol),
-      getSentiment(protocol),
-      getFusion(protocol),
+      getRisk(activeProtocol),
+      getSentiment(activeProtocol),
+      getFusion(activeProtocol),
       getFeed(),
     ])
       .then(([r, s, f, fd]) => {
@@ -102,10 +67,11 @@ export default function Index() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+
     return () => {
       mounted = false;
     };
-  }, [protocol]);
+  }, [activeToken, activeProtocol]);
 
   const trend = useMemo(() => fusion?.trend ?? [], [fusion]);
   const riskColors = bandColors(risk?.score ?? 0);
@@ -114,18 +80,35 @@ export default function Index() {
 
   return (
     <Layout>
-      {/* Protocol Selector */}
-      <div className="flex items-center justify-between mb-2">
-        <div />
+      {/* Token buttons + Protocol select */}
+      <div className="flex items-center justify-between mb-4">
+        {/* Token Selector */}
+        <div className="flex gap-3">
+          {TOKENS.map((token) => (
+            <button
+              key={token.id}
+              onClick={() => setActiveToken(token)}
+              className={`px-4 py-2 rounded-md text-sm font-medium border transition ${
+                activeToken.id === token.id
+                  ? "bg-primary text-white"
+                  : "bg-background text-foreground hover:bg-muted"
+              }`}
+            >
+              {token.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Protocol Selector */}
         <div className="flex items-center gap-2 text-sm">
           <Label htmlFor="protocol">Protocol</Label>
           <select
             id="protocol"
-            value={protocol}
-            onChange={(e) => setProtocol(e.target.value)}
+            value={activeProtocol}
+            onChange={(e) => setActiveProtocol(e.target.value)}
             className="bg-background border border-border rounded-md px-2 py-1"
           >
-            {protocols.map((p: any) => (
+            {PROTOCOLS.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -136,23 +119,20 @@ export default function Index() {
 
       {/* Fusion Risk Index + Trend */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Fusion Risk Index */}
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-sm">Fusion Risk Index</CardTitle>
+            <CardTitle className="text-sm">
+              {activeToken.name} Fusion Risk Index
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Gauge
               value={fusion?.score ?? 0}
-              label="0 - 100"
+              label={activeToken.name}
               colorFrom={fusionColors.from}
               colorTo={fusionColors.to}
             />
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-muted-foreground">
-              <div>Weights</div>
-              <div className="text-right text-foreground">
-                F {financialPct}% / S {sentimentPct}%
-              </div>
               <div>Confidence</div>
               <div className="text-right text-foreground">
                 {fusion?.confidence ?? "—"}%
@@ -164,7 +144,7 @@ export default function Index() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Fusion Risk Index Trend</CardTitle>
+            <CardTitle>{activeToken.name} Fusion Trend</CardTitle>
           </CardHeader>
           <CardContent>
             {loading && !trend.length ? (
@@ -180,92 +160,37 @@ export default function Index() {
 
       {/* Risk + Sentiment + Oracle */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Defi Risk */}
         <Card>
           <CardHeader>
-            <CardTitle>DeFi Risk Score</CardTitle>
+            <CardTitle>{activeToken.name} DeFi Risk</CardTitle>
           </CardHeader>
           <CardContent>
             <Gauge
               value={risk?.score ?? 0}
-              label="0 - 100"
+              label={activeToken.name}
               colorFrom={riskColors.from}
               colorTo={riskColors.to}
             />
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-              <div>TVL</div>
-              <div className="text-right text-foreground">
-                ${risk?.metrics?.tvl?.toLocaleString?.() ?? "—"}
-              </div>
-              <div>Collateral Ratio</div>
-              <div className="text-right text-foreground">
-                {risk?.metrics?.collateral_ratio ?? "—"}%
-              </div>
-              <div>Liquidations (24h)</div>
-              <div className="text-right text-foreground">
-                {risk?.metrics?.liquidations ?? "—"}
-              </div>
-              <div>Oracle Spread</div>
-              <div className="text-right text-foreground">
-                {risk?.metrics?.oracle_spread ?? "—"}%
-              </div>
-            </div>
           </CardContent>
         </Card>
 
-        {/* Sentiment Risk */}
         <Card>
           <CardHeader>
-            <CardTitle>Sentiment Risk</CardTitle>
+            <CardTitle>{activeToken.name} Sentiment Risk</CardTitle>
           </CardHeader>
           <CardContent>
             <Gauge
               value={sent?.score ?? 0}
-              label="0 - 100"
+              label={activeToken.name}
               colorFrom={sentColors.from}
               colorTo={sentColors.to}
             />
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-              {sources.twitter && (
-                <>
-                  <div>Twitter</div>
-                  <div className="text-right text-foreground">
-                    {sent?.metrics?.twitter ?? "—"}
-                  </div>
-                </>
-              )}
-              {sources.reddit && (
-                <>
-                  <div>Reddit</div>
-                  <div className="text-right text-foreground">
-                    {sent?.metrics?.reddit ?? "—"}
-                  </div>
-                </>
-              )}
-              {sources.telegram && (
-                <>
-                  <div>Telegram</div>
-                  <div className="text-right text-foreground">
-                    {sent?.metrics?.telegram ?? "—"}
-                  </div>
-                </>
-              )}
-              {sources.news && (
-                <>
-                  <div>News</div>
-                  <div className="text-right text-foreground">
-                    {sent?.metrics?.news ?? "—"}
-                  </div>
-                </>
-              )}
-            </div>
           </CardContent>
         </Card>
 
-        {/* Oracle Updates */}
         <Card>
           <CardHeader>
-            <CardTitle>BlockDAG Oracle Updates</CardTitle>
+            <CardTitle>{activeToken.name} Oracle Updates</CardTitle>
           </CardHeader>
           <CardContent>
             <UpdatesFeed
