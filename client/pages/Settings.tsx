@@ -11,24 +11,29 @@ import { toast } from "../hooks/use-toast";
 export default function Settings() {
   const { address, connect, disconnect, isConnecting } = useWallet();
 
-  const [notif, setNotif] = useState(() => ({ price: true, riskDelta: true, onchain: false }));
+  const [notif, setNotif] = useState({ price: true, riskDelta: true, onchain: false });
   const [riskThreshold, setRiskThreshold] = useState(75);
   const [refresh, setRefresh] = useState(30);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
+  // Load settings on mount
   useEffect(() => {
     try {
       const n = JSON.parse(localStorage.getItem("sx.settings.notif") || "null");
       const r = JSON.parse(localStorage.getItem("sx.settings.risk") || "null");
       const rf = JSON.parse(localStorage.getItem("sx.settings.refresh") || "null");
       const t = localStorage.getItem("sx.settings.theme");
+
       if (n) setNotif(n);
-      if (r) setRiskThreshold(r);
-      if (rf) setRefresh(rf);
+      if (typeof r === "number") setRiskThreshold(r);
+      if (typeof rf === "number") setRefresh(rf);
       if (t === "light" || t === "dark") setTheme(t);
-    } catch {}
+    } catch {
+      console.warn("⚠️ Failed to load settings from storage");
+    }
   }, []);
 
+  // Apply theme live
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
@@ -38,7 +43,8 @@ export default function Settings() {
     localStorage.setItem("sx.settings.risk", JSON.stringify(riskThreshold));
     localStorage.setItem("sx.settings.refresh", JSON.stringify(refresh));
     localStorage.setItem("sx.settings.theme", theme);
-    toast({ title: "Saved", description: "Account settings updated." });
+
+    toast({ title: "✅ Saved", description: "Your settings have been updated." });
   }
 
   return (
@@ -58,9 +64,13 @@ export default function Settings() {
                 </div>
                 <div className="mt-2">
                   {address ? (
-                    <Button variant="outline" size="sm" onClick={disconnect}>Disconnect</Button>
+                    <Button variant="outline" size="sm" onClick={disconnect}>
+                      Disconnect
+                    </Button>
                   ) : (
-                    <Button size="sm" onClick={connect} disabled={isConnecting}>{isConnecting ? "Connecting..." : "Connect Wallet"}</Button>
+                    <Button size="sm" onClick={connect} disabled={isConnecting}>
+                      {isConnecting ? "Connecting..." : "Connect Wallet"}
+                    </Button>
                   )}
                 </div>
               </div>
@@ -68,8 +78,20 @@ export default function Settings() {
             <div className="flex items-center justify-between">
               <Label>Theme</Label>
               <div className="flex gap-2">
-                <Button size="sm" variant={theme === "dark" ? "default" : "outline"} onClick={() => setTheme("dark")}>Dark</Button>
-                <Button size="sm" variant={theme === "light" ? "default" : "outline"} onClick={() => setTheme("light")}>Light</Button>
+                <Button
+                  size="sm"
+                  variant={theme === "dark" ? "default" : "outline"}
+                  onClick={() => setTheme("dark")}
+                >
+                  Dark
+                </Button>
+                <Button
+                  size="sm"
+                  variant={theme === "light" ? "default" : "outline"}
+                  onClick={() => setTheme("light")}
+                >
+                  Light
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -83,15 +105,24 @@ export default function Settings() {
           <CardContent className="space-y-4 text-sm">
             <div className="flex items-center justify-between">
               <Label>Price movements</Label>
-              <Switch checked={notif.price} onCheckedChange={(v) => setNotif((s) => ({ ...s, price: Boolean(v) }))} />
+              <Switch
+                checked={notif.price}
+                onCheckedChange={(v) => setNotif((s) => ({ ...s, price: Boolean(v) }))}
+              />
             </div>
             <div className="flex items-center justify-between">
               <Label>Risk Delta Alerts</Label>
-              <Switch checked={notif.riskDelta} onCheckedChange={(v) => setNotif((s) => ({ ...s, riskDelta: Boolean(v) }))} />
+              <Switch
+                checked={notif.riskDelta}
+                onCheckedChange={(v) => setNotif((s) => ({ ...s, riskDelta: Boolean(v) }))}
+              />
             </div>
             <div className="flex items-center justify-between">
               <Label>On-chain Events</Label>
-              <Switch checked={notif.onchain} onCheckedChange={(v) => setNotif((s) => ({ ...s, onchain: Boolean(v) }))} />
+              <Switch
+                checked={notif.onchain}
+                onCheckedChange={(v) => setNotif((s) => ({ ...s, onchain: Boolean(v) }))}
+              />
             </div>
           </CardContent>
         </Card>
@@ -106,11 +137,17 @@ export default function Settings() {
               <span>Alert when Fusion Risk Index exceeds</span>
               <span className="font-semibold">{riskThreshold}</span>
             </div>
-            <Slider value={[riskThreshold]} onValueChange={(v) => setRiskThreshold(Math.round(v[0]))} min={0} max={100} step={1} />
+            <Slider
+              value={[riskThreshold]}
+              onValueChange={(v) => setRiskThreshold(Math.round(v[0]))}
+              min={0}
+              max={100}
+              step={1}
+            />
           </CardContent>
         </Card>
 
-        {/* Data */}
+        {/* Data Refresh */}
         <Card className="rounded-2xl shadow-lg">
           <CardHeader>
             <CardTitle>Data Refresh</CardTitle>
@@ -120,12 +157,20 @@ export default function Settings() {
               <span>Refresh interval (seconds)</span>
               <span className="font-semibold">{refresh}</span>
             </div>
-            <Slider value={[refresh]} onValueChange={(v) => setRefresh(Math.round(v[0]))} min={5} max={120} step={5} />
+            <Slider
+              value={[refresh]}
+              onValueChange={(v) => setRefresh(Math.round(v[0]))}
+              min={5}
+              max={120}
+              step={5}
+            />
           </CardContent>
         </Card>
 
         <div className="lg:col-span-2">
-          <Button onClick={save}>Save Settings</Button>
+          <Button onClick={save} className="w-full">
+            Save Settings
+          </Button>
         </div>
       </div>
     </Layout>
