@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "../components/layout/Layout";
 import {
   Card,
@@ -136,6 +136,7 @@ export default function Index() {
 
       {/* Fusion Risk Index + Trend */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Fusion Risk Index */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm">Fusion Risk Index</CardTitle>
@@ -179,10 +180,10 @@ export default function Index() {
 
       {/* Risk + Sentiment + Oracle */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Financial Risk */}
+        {/* Defi Risk */}
         <Card>
           <CardHeader>
-            <CardTitle>Financial Risk Score</CardTitle>
+            <CardTitle>DeFi Risk Score</CardTitle>
           </CardHeader>
           <CardContent>
             <Gauge

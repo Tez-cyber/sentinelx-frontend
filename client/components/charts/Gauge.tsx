@@ -1,7 +1,27 @@
-import { ResponsiveContainer, RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
+import { useId } from "react";
+import {
+  ResponsiveContainer,
+  RadialBarChart,
+  RadialBar,
+  PolarAngleAxis,
+} from "recharts";
 
-export function Gauge({ value = 72, label, colorFrom = "#22d3ee", colorTo = "#8b5cf6" }: { value?: number; label: string; colorFrom?: string; colorTo?: string }) {
+export function Gauge({
+  value = 72,
+  label,
+  colorFrom = "#22d3ee",
+  colorTo = "#8b5cf6",
+}: {
+  value?: number;
+  label: string;
+  colorFrom?: string;
+  colorTo?: string;
+}) {
   const data = [{ name: label, value: Math.max(0, Math.min(100, value)) }];
+
+  // unique ID per Gauge instance
+  const gradientId = useId();
+
   return (
     <div className="relative">
       <ResponsiveContainer width="100%" height={220}>
@@ -13,7 +33,7 @@ export function Gauge({ value = 72, label, colorFrom = "#22d3ee", colorTo = "#8b
           outerRadius={100}
         >
           <defs>
-            <linearGradient id={`g-${label}`} x1="0" y1="0" x2="1" y2="1">
+            <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor={colorFrom} />
               <stop offset="100%" stopColor={colorTo} />
             </linearGradient>
@@ -23,13 +43,17 @@ export function Gauge({ value = 72, label, colorFrom = "#22d3ee", colorTo = "#8b
             dataKey="value"
             cornerRadius={10}
             background={{ fill: "hsl(var(--muted))" }}
-            fill={`url(#g-${label})`}
+            fill={`url(#${gradientId})`}
           />
         </RadialBarChart>
       </ResponsiveContainer>
+
+      {/* Center Label */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl font-bold text-foreground">{data[0].value}</div>
+          <div className="text-4xl font-bold text-foreground">
+            {data[0].value}
+          </div>
           <div className="text-xs text-muted-foreground">{label}</div>
         </div>
       </div>

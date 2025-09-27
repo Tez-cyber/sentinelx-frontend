@@ -30,7 +30,7 @@ export async function getRisk(protocol: string): Promise<RiskResponse> {
     return await fetchJSON(`/api/risk/${protocol}`);
   } catch {
     return {
-      score: 78,
+      score: 40,
       metrics: {
         tvl: 124_500_000,
         collateral_ratio: 165,
@@ -59,7 +59,7 @@ export async function getFusion(protocol: string): Promise<FusionResponse> {
     return await fetchJSON(`/api/fusion/${protocol}`);
   } catch {
     return {
-      score: 72,
+      score: 40,
       weights: { financial_pct: 70, sentiment_pct: 30 },
       confidence: 88,
       notes: "Model v1.4-beta with BlockDAG oracle consensus.",
