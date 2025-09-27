@@ -19,8 +19,8 @@ It aggregates **on-chain risk metrics**, **social sentiment signals**, and **com
 
 ## 📊 Resources  
 
-- 📑 **Pitch Deck:** [View Deck]([https://your-link.com/pitch-deck](https://docs.google.com/document/d/1tCLTrjCy4SCFhUVXjvPfMtT8IYqbDvQmHHIhBz3vHfo/edit?usp=sharing))  
-- 📝 **Slide Presentation:** [View Slides]([https://your-link.com/slides](https://docs.google.com/presentation/d/1mM2oTeQWmbCpur3JUyPbQewQoB_DKX7F1U6bF6P0UwE/edit?usp=sharing))  
+- 📑 **Pitch Deck:** [View Deck](https://docs.google.com/document/d/1tCLTrjCy4SCFhUVXjvPfMtT8IYqbDvQmHHIhBz3vHfo/edit?usp=sharing)  
+- 📝 **Slide Presentation:** [View Slides](https://docs.google.com/presentation/d/1mM2oTeQWmbCpur3JUyPbQewQoB_DKX7F1U6bF6P0UwE/edit?usp=sharing)  
 - 🎥 **Demo Video:** [Watch Video](https://drive.google.com/file/d/18Js3bQJB2zHX8lYBHsyKl1igCFwk9G-U/view?usp=sharing)  
 - 🌐 **Deployed App:** [Launch SentinelX](https://sentinelxpredict.netlify.app/)  
 
