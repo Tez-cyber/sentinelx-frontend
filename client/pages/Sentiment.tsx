@@ -10,6 +10,8 @@ import { Switch } from "../components/ui/switch";
 import { Slider } from "../components/ui/slider";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
 import { Gauge } from "../components/charts/Gauge";
 import FusionLineChart from "../components/charts/FusionLineChart";
 import { toast } from "../hooks/use-toast";
@@ -27,6 +29,15 @@ export default function Sentiment() {
     reddit: 0.4,
     news: 0.7,
   }));
+
+  // community form state
+  const [community, setCommunity] = useState({
+    protocol: "",
+    token: "",
+    risk: "",
+    sentiment: "",
+    notes: "",
+  });
 
   useEffect(() => {
     try {
@@ -64,8 +75,19 @@ export default function Sentiment() {
     toast({ title: "Saved", description: "Sentiment preferences updated." });
   }
 
+  function submitCommunity() {
+    // Mock save - in real case -> send to backend/blockDAG
+    console.log("Community Submission:", community);
+    toast({
+      title: "Submitted",
+      description: "Community input submitted to BlockDAG.",
+    });
+    setCommunity({ protocol: "", token: "", risk: "", sentiment: "", notes: "" });
+  }
+
   return (
     <Layout>
+      {/* Existing Sentiment Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="col-span-1 rounded-2xl shadow-lg">
           <CardHeader>
@@ -143,6 +165,65 @@ export default function Sentiment() {
             Customize how SentinelX weights different sentiment sources. Your
             settings personalize the dashboard and alerts; they do not affect
             global model weights.
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* New Community Input Section */}
+      <div className="mt-6">
+        <Card className="rounded-2xl shadow-lg">
+          <CardHeader>
+            <CardTitle>Community Input</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Protocol (e.g., Aave, Uniswap)"
+              value={community.protocol}
+              onChange={(e) =>
+                setCommunity({ ...community, protocol: e.target.value })
+              }
+              className="bg-background"
+            />
+            <Input
+              placeholder="Token (e.g., ETH, SOL, MATIC)"
+              value={community.token}
+              onChange={(e) =>
+                setCommunity({ ...community, token: e.target.value })
+              }
+              className="bg-background"
+            />
+            <Input
+              placeholder="Risk Score (0-100)"
+              type="number"
+              value={community.risk}
+              onChange={(e) =>
+                setCommunity({ ...community, risk: e.target.value })
+              }
+              className="bg-background"
+            />
+            <Input
+              placeholder="Sentiment Score (0-100)"
+              type="number"
+              value={community.sentiment}
+              onChange={(e) =>
+                setCommunity({ ...community, sentiment: e.target.value })
+              }
+              className="bg-background"
+            />
+            <Textarea
+              placeholder="Add analysis or notes..."
+              value={community.notes}
+              onChange={(e) =>
+                setCommunity({ ...community, notes: e.target.value })
+              }
+              className="bg-background"
+            />
+            <Button
+              className="bg-gradient-to-r from-cyan-400 to-purple-500 text-white"
+              onClick={submitCommunity}
+            >
+              Submit to BlockDAG
+            </Button>
           </CardContent>
         </Card>
       </div>
